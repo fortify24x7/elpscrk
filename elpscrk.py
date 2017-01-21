@@ -6,11 +6,13 @@ if sys.argv[1] != str("-usr"):
 	time.sleep(3)
 	sound.play_effect("/System/Library/Audio/UISounds/SIMToolkitNegativeACK.caf")
 	print "  Usage:\n\n-usr <File> -pwd <File>\n\n\n  RoBrute Usage:\n <word>;<word>;<word>;<word>;<symbol>"
+	print "\n Read Usage.md for more information."
 	sys.exit()
 if sys.argv[3] != "-pwd":
 	time.sleep(3)
 	sound.play_effect("/System/Library/Audio/UISounds/SIMToolkitNegativeACK.caf")
 	print "  Usage:\n\n-usr <File> -pwd <File>\n\n\n  RoBrute Usage:\n <word>;<word>;<word>;<word>;<symbol>"
+	print "\n Read Usage.md for more information."
 	sys.exit()
 sys.argv[1] = str("-usr")
 sys.argv[3] = str("-pwd")
