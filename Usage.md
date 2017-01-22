@@ -38,7 +38,7 @@ Feel free to change the name and file type by locating
 the name code on the 3rd line of the program
 
 # Legal
-RoBrute is made fully by me (RussianOtter) and owned by me.
+RoBrute & rowifi is made fully by me (RussianOtter) and owned by me.
 All the scripts in this directory were made by me exactly.
 The name elpsrck is from Mr Robot and Mr Robot is what gave me inspiration to make a real version of
 their client. So here it is! The name
