@@ -40,7 +40,7 @@ taken = 0
 console.set_color(0,1,1)
 sys.stdout.write("elpscrk$: ")
 console.set_color()
-a = (list(map("".join, itertools.permutations(raw_input("-Reverse ")))))
+a = (list(map("".join, itertools.permutations(raw_input("-reverse ")))))
 c = len(a)
 lol = 1
 d = 1980
@@ -156,6 +156,25 @@ for i in range(1, c + e):
 		d5 = a18 + str(d)
 		d6 = a19 + str(d)
 		d7 = a30 + str(d)
+		d8 = hint1 + hint2
+		d9 = hint1 + hint3
+		d10 = hint1 + hint4
+		d11 = hint2 + hint1
+		d12 = hint2 + hint3
+		d13 = hint2 + hint4
+		d14 = hint3 + hint1
+		d15 = hint3 + hint2
+		d16 = hint3 + hint4
+		d17 = hint4 + hint1
+		d18 = hint4 + hint2
+		d19 = hint4 + hint3
+		d20 = hint1 + hint1
+		d21 = hint2 + hint2
+		d22 = hint3 + hint3
+		d23 = hint4 + hint4
+		d24 = hint5 + hint5
+		d25 = hint1 + hint2 + hint3 + hint4
+		d26 = hint4 + hint3 + hint2 + hint1
 		c34 = hint1 + str(random.randint(1,20))
 		c35 = hint2 + str(random.randint(1,20))
 		c36 = hint3 + str(random.randint(1,20))
@@ -169,7 +188,7 @@ for i in range(1, c + e):
 if i == combo - 1:
 	n = "\n"
 	print_list2 = c1 + n + c2 + n + c3 + n + c4 + n + c5 + n + c6 + n + c7 + n + c8 + n + c9 + n + c10 + n + c11 + n + c12 + n + c13 + n + c14 + n + c15 + n + c16 + n + c17 + n + c18 + n + c19 + n + c20 + n + c21 + n + c22 + n + c23 + n + c24 + n + c25 + n + c26 + n + c27 + n + c28 + n + c29 + n + c30 + n + c31 + n + c32 + n + c33 + n + c34 + n + c35 + n + c36 + n + c37
-	debug_list = a19 + n + a20 + n + a21 + n + a22 + n + a25 + n + a26 + n + a27 + n + a28 + n + a29 + n + a14 + n + a15 + n + a16 + n + a17 + n + a18 + b18 + n + d1 + n + d2 + n + d3 + n + d4 + n + d5 + n + d6 + n + d7
+	debug_list = a19 + n + a20 + n + a21 + n + a22 + n + a25 + n + a26 + n + a27 + n + a28 + n + a29 + n + a14 + n + a15 + n + a16 + n + a17 + n + a18 + b18 + n + d1 + n + d2 + n + d3 + n + d4 + n + d5 + n + d6 + n + d7 + n + d8 + n + d9 + n + d10 + n + d11 + n + d12 + n + d13 + n + d14 + n + d15 + n + d16 + n + d17 + n + d18 + n + d19 + n + d20 + n + d21 + n + d22 + n + d23 + n + d24 + n + d25 + n + d26
 file.write(print_list2)
 file.write(debug_list)
 file.write("""\n----------------------------\n\n       LEAVE ME HERE!\n
