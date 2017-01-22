@@ -32,6 +32,7 @@ if yn == "y":
 	if hint5 == "''":
 		hint5 = ''
 if yn != "y":
+	import rowifi
 	sys.exit()
 e = 2017 - 1980
 i = 0
