@@ -1,4 +1,4 @@
-import sys, console, time, random, string, os
+import sys, console, time, random, string, os, sound
 from datetime import timedelta
 name = 'wifipass' + '.data'
 yn = raw_input("Educated Wifi Brute Force? y/n: ")
