@@ -1,24 +1,27 @@
-import sys, time, console, string, random, sound, os
+import sys, time, console, string, random, sound, os, argparse
 time.sleep(0.2)
 a = random.randint(1980, 2017)
 start = "root@elliot:$ "
-if sys.argv[1] != str("-usr"):
+
+def help():
 	time.sleep(3)
 	sound.play_effect("/System/Library/Audio/UISounds/SIMToolkitNegativeACK.caf")
-	print "  Usage:\n\n-usr <File> -pwd <File>\n\n\n  RoBrute Usage:\n <word>;<word>;<word>;<word>;<symbol>"
+	print "  Usage:\n\n-u <File> -p <File>\n\n\n  RoBrute Usage:\n <word>;<word>;<word>;<word>;<symbol>"
 	print "\n Read Usage.md for more information."
 	sys.exit()
-if sys.argv[3] != "-pwd":
-	time.sleep(3)
-	sound.play_effect("/System/Library/Audio/UISounds/SIMToolkitNegativeACK.caf")
-	print "  Usage:\n\n-usr <File> -pwd <File>\n\n\n  RoBrute Usage:\n <word>;<word>;<word>;<word>;<symbol>"
-	print "\n Read Usage.md for more information."
-	sys.exit()
-sys.argv[1] = str("-usr")
-sys.argv[3] = str("-pwd")
-username = sys.argv[2]
-password = sys.argv[4]
-pwords = open(sys.argv[4], "r").readlines()
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-u", "--usr")
+parser.add_argument("-p", "--pwd")
+args = parser.parse_args()
+
+if not args.usr or not args.pwd:
+	help()
+	sys.exit(0)
+
+username = args.usr
+password = args.pwd
+
 console.set_color(0,1,1)
 sys.stdout.write("root@elliot:$ ")
 console.set_color()
@@ -27,7 +30,7 @@ print "elpscrk"
 sound.play_effect("/System/Library/Audio/UISounds/end_record.caf")
 import elplogo
 time.sleep(1)
-combo = len(pwords)
+combo = len("26829263")
 print "List Count: " + str(combo) + " Type: Alphanum"
 time.sleep(1)
 import robrute
