@@ -24,7 +24,7 @@ must be submitted!
 
 **root@elliot$** `<HTTP|HTTPS|SSH|HTTP-ALT> Vector`   <- This means the program has found a successful login!
 
-**root@elliot$** `Password: <Successful Password` 
+**root@elliot$** `Password: <Successful Password>` 
 
 ***Errors:***
 
